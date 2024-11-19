@@ -1,4 +1,4 @@
-package com.codideep.main.Business.Person.ResponseObject;
+package com.codideep.main.Service.Person.ResponseObject;
 
 public class ResponseGetData {
 	public String firstName;
