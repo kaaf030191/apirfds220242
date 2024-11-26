@@ -1,6 +1,9 @@
 package com.codideep.main.Service.Person;
 
 import java.text.SimpleDateFormat;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -13,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.codideep.main.Business.BusinessPerson;
 import com.codideep.main.Dto.DtoPerson;
 import com.codideep.main.Service.Person.RequestObject.RequestInsert;
+import com.codideep.main.Service.Person.ResponseObject.ResponseGetAll;
 import com.codideep.main.Service.Person.ResponseObject.ResponseGetData;
 import org.springframework.web.bind.annotation.PostMapping;
 
@@ -50,5 +54,29 @@ public class PersonController {
 		}
 
 		return new ResponseEntity<>("Registro realizado correctamente.", HttpStatus.CREATED);
+	}
+
+	@GetMapping(path = "getall")
+	public ResponseEntity<ResponseGetAll> getAll() {
+		ResponseGetAll responseGetAll = new ResponseGetAll();
+
+		List<DtoPerson> listDtoPerson = businessPerson.getAll();
+
+		for (DtoPerson item : listDtoPerson) {
+			Map<String, Object> map = new HashMap<>();
+
+			map.put("idPerson", item.getIdPerson());
+			map.put("firstName", item.getFirstName());
+			map.put("surName", item.getSurName());
+			map.put("dni", item.getDni());
+			map.put("gender", item.isGender());
+			map.put("birthDate", item.getBirthDate());
+			map.put("createdAt", item.getCreatedAt());
+			map.put("updatedAt", item.getUpdatedAt());
+
+			responseGetAll.dto.listPerson.add(map);
+		}
+
+		return new ResponseEntity<>(responseGetAll, HttpStatus.OK);
 	}
 }

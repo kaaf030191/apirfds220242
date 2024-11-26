@@ -29,7 +29,7 @@ public class TPerson implements Serializable {
 	private String dni;
 
 	@Column(name = "gender")
-	private Boolean gender;
+	private boolean gender;
 
 	@Column(name = "birthDate")
 	private Date birthDate;

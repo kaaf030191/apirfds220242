@@ -1,6 +1,8 @@
 package com.codideep.main.Business;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,5 +34,28 @@ public class BusinessPerson {
 		tPerson.setUpdatedAt(dtoPerson.getUpdatedAt());
 
 		repoPerson.save(tPerson);
+	}
+
+	public List<DtoPerson> getAll() {
+		List<TPerson> listTPerson = repoPerson.findAll();
+
+		List<DtoPerson> listDtoPerson = new ArrayList<>();
+
+		for (TPerson item : listTPerson) {
+			DtoPerson dtoPerson = new DtoPerson();
+
+			dtoPerson.setIdPerson(item.getIdPerson());
+			dtoPerson.setFirstName(item.getFirstName());
+			dtoPerson.setSurName(item.getSurName());
+			dtoPerson.setDni(item.getDni());
+			dtoPerson.setGender(item.isGender());
+			dtoPerson.setBirthDate(item.getBirthDate());
+			dtoPerson.setCreatedAt(item.getCreatedAt());
+			dtoPerson.setUpdatedAt(item.getUpdatedAt());
+
+			listDtoPerson.add(dtoPerson);
+		}
+
+		return listDtoPerson;
 	}
 }
