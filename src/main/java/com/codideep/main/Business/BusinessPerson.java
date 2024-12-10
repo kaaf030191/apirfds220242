@@ -3,6 +3,7 @@ package com.codideep.main.Business;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,11 +13,14 @@ import com.codideep.main.Dto.DtoPerson;
 import com.codideep.main.Entity.TPerson;
 import com.codideep.main.Repository.RepoPerson;
 
+import jakarta.transaction.Transactional;
+
 @Service
 public class BusinessPerson {
 	@Autowired
 	private RepoPerson repoPerson;
 
+	@Transactional
 	public void insert(DtoPerson dtoPerson) {
 		dtoPerson.setIdPerson(UUID.randomUUID().toString());
 		dtoPerson.setCreatedAt(new Date());
@@ -57,5 +61,16 @@ public class BusinessPerson {
 		}
 
 		return listDtoPerson;
+	}
+
+	@Transactional
+	public boolean delete(String idPerson) {
+		Optional<TPerson> tPerson = repoPerson.findById(idPerson);
+
+		if (tPerson.isPresent()) {
+			repoPerson.deleteById(idPerson);
+		}
+
+		return true;
 	}
 }

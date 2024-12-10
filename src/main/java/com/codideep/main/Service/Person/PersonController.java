@@ -8,8 +8,10 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -30,9 +32,13 @@ public class PersonController {
 	public ResponseEntity<ResponseGetData> getData() {
 		ResponseGetData responseGetData = new ResponseGetData();
 
-		responseGetData.firstName = "Kevin Arnold";
-		responseGetData.surName = "Arias Figueroa";
-		responseGetData.dni = "77777777";
+		try {
+			responseGetData.firstName = "Kevin Arnold";
+			responseGetData.surName = "Arias Figueroa";
+			responseGetData.dni = "77777777";
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 
 		return new ResponseEntity<>(responseGetData, HttpStatus.OK);
 	}
@@ -60,23 +66,38 @@ public class PersonController {
 	public ResponseEntity<ResponseGetAll> getAll() {
 		ResponseGetAll responseGetAll = new ResponseGetAll();
 
-		List<DtoPerson> listDtoPerson = businessPerson.getAll();
+		try {
+			List<DtoPerson> listDtoPerson = businessPerson.getAll();
 
-		for (DtoPerson item : listDtoPerson) {
-			Map<String, Object> map = new HashMap<>();
+			for (DtoPerson item : listDtoPerson) {
+				Map<String, Object> map = new HashMap<>();
 
-			map.put("idPerson", item.getIdPerson());
-			map.put("firstName", item.getFirstName());
-			map.put("surName", item.getSurName());
-			map.put("dni", item.getDni());
-			map.put("gender", item.isGender());
-			map.put("birthDate", item.getBirthDate());
-			map.put("createdAt", item.getCreatedAt());
-			map.put("updatedAt", item.getUpdatedAt());
+				map.put("idPerson", item.getIdPerson());
+				map.put("firstName", item.getFirstName());
+				map.put("surName", item.getSurName());
+				map.put("dni", item.getDni());
+				map.put("gender", item.isGender());
+				map.put("birthDate", item.getBirthDate());
+				map.put("createdAt", item.getCreatedAt());
+				map.put("updatedAt", item.getUpdatedAt());
 
-			responseGetAll.dto.listPerson.add(map);
+				responseGetAll.dto.listPerson.add(map);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
 
 		return new ResponseEntity<>(responseGetAll, HttpStatus.OK);
+	}
+
+	@DeleteMapping(path = "delete/{idPerson}")
+	public ResponseEntity<Boolean> delete(@PathVariable String idPerson) {
+		try {
+			businessPerson.delete(idPerson);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		return new ResponseEntity<>(true, HttpStatus.OK);
 	}
 }
