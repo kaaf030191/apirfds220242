@@ -8,6 +8,7 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -18,8 +19,13 @@ import org.springframework.web.bind.annotation.RestController;
 import com.codideep.main.Business.BusinessPerson;
 import com.codideep.main.Dto.DtoPerson;
 import com.codideep.main.Service.Person.RequestObject.RequestInsert;
+import com.codideep.main.Service.Person.ResponseObject.ResponseDelete;
 import com.codideep.main.Service.Person.ResponseObject.ResponseGetAll;
 import com.codideep.main.Service.Person.ResponseObject.ResponseGetData;
+import com.codideep.main.Service.Person.ResponseObject.ResponseInsert;
+
+import jakarta.validation.Valid;
+
 import org.springframework.web.bind.annotation.PostMapping;
 
 @RestController
@@ -44,8 +50,18 @@ public class PersonController {
 	}
 
 	@PostMapping(path = "insert", consumes = "multipart/form-data")
-	public ResponseEntity<String> insert(@ModelAttribute RequestInsert request) {
+	public ResponseEntity<ResponseInsert> insert(@Valid @ModelAttribute RequestInsert request, BindingResult bindingResult) {
+		ResponseInsert response = new ResponseInsert();
+
 		try {
+			if (bindingResult.hasErrors()) {
+				bindingResult.getAllErrors().forEach(error -> {
+					response.mo.addMessage(error.getDefaultMessage());
+				});
+
+				return new ResponseEntity<>(response, HttpStatus.OK);
+			}
+
 			DtoPerson dtoPerson = new DtoPerson();
 
 			dtoPerson.setFirstName(request.getFirstName());
@@ -55,16 +71,20 @@ public class PersonController {
 			dtoPerson.setBirthDate(new SimpleDateFormat("yyyy-mm-dd").parse(request.getBirthDate()));
 
 			businessPerson.insert(dtoPerson);
+
+			response.mo.addMessage("Registro realizado correctamente");
+			response.mo.setSuccess();
 		} catch (Exception e) {
-			e.printStackTrace();
+			response.mo.addMessage("Ocurrió un error inesperado, estamos trabajando para resolvero. Gracias por su paciencia.");
+			response.mo.setException();
 		}
 
-		return new ResponseEntity<>("Registro realizado correctamente.", HttpStatus.CREATED);
+		return new ResponseEntity<>(response, HttpStatus.CREATED);
 	}
 
 	@GetMapping(path = "getall")
 	public ResponseEntity<ResponseGetAll> getAll() {
-		ResponseGetAll responseGetAll = new ResponseGetAll();
+		ResponseGetAll response = new ResponseGetAll();
 
 		try {
 			List<DtoPerson> listDtoPerson = businessPerson.getAll();
@@ -81,23 +101,32 @@ public class PersonController {
 				map.put("createdAt", item.getCreatedAt());
 				map.put("updatedAt", item.getUpdatedAt());
 
-				responseGetAll.dto.listPerson.add(map);
+				response.dto.listPerson.add(map);
+
+				response.mo.setSuccess();
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			response.mo.addMessage("Ocurrió un error inesperado, estamos trabajando para resolvero. Gracias por su paciencia.");
+			response.mo.setException();
 		}
 
-		return new ResponseEntity<>(responseGetAll, HttpStatus.OK);
+		return new ResponseEntity<>(response, HttpStatus.OK);
 	}
 
 	@DeleteMapping(path = "delete/{idPerson}")
-	public ResponseEntity<Boolean> delete(@PathVariable String idPerson) {
+	public ResponseEntity<ResponseDelete> delete(@PathVariable String idPerson) {
+		ResponseDelete response = new ResponseDelete();
+
 		try {
 			businessPerson.delete(idPerson);
+
+			response.mo.addMessage("Eliminación realizada correctamente");
+			response.mo.setSuccess();
 		} catch (Exception e) {
-			e.printStackTrace();
+			response.mo.addMessage("Ocurrió un error inesperado, estamos trabajando para resolvero. Gracias por su paciencia.");
+			response.mo.setException();
 		}
 
-		return new ResponseEntity<>(true, HttpStatus.OK);
+		return new ResponseEntity<>(response, HttpStatus.OK);
 	}
 }
