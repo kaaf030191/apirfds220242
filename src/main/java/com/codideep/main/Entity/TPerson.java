@@ -28,6 +28,9 @@ public class TPerson implements Serializable {
 	@Column(name = "dni")
 	private String dni;
 
+	@Column(name = "password")
+	private String password;
+
 	@Column(name = "gender")
 	private boolean gender;
 

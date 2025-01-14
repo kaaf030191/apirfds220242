@@ -73,4 +73,25 @@ public class BusinessPerson {
 
 		return true;
 	}
+
+	public DtoPerson login(String dni, String password) {
+		Optional<TPerson> tPerson = repoPerson.login(dni, password);
+
+		DtoPerson dtoPerson = null;
+
+		if(tPerson.isPresent()) {
+			dtoPerson = new DtoPerson();
+
+			dtoPerson.setIdPerson(tPerson.get().getIdPerson());
+			dtoPerson.setFirstName(tPerson.get().getFirstName());
+			dtoPerson.setSurName(tPerson.get().getSurName());
+			dtoPerson.setDni(tPerson.get().getDni());
+			dtoPerson.setGender(tPerson.get().isGender());
+			dtoPerson.setBirthDate(tPerson.get().getBirthDate());
+			dtoPerson.setCreatedAt(tPerson.get().getCreatedAt());
+			dtoPerson.setUpdatedAt(tPerson.get().getUpdatedAt());
+		}
+
+		return dtoPerson;
+	}
 }

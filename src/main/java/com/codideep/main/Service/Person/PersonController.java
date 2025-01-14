@@ -19,10 +19,12 @@ import org.springframework.web.bind.annotation.RestController;
 import com.codideep.main.Business.BusinessPerson;
 import com.codideep.main.Dto.DtoPerson;
 import com.codideep.main.Service.Person.RequestObject.RequestInsert;
+import com.codideep.main.Service.Person.RequestObject.RequestLogin;
 import com.codideep.main.Service.Person.ResponseObject.ResponseDelete;
 import com.codideep.main.Service.Person.ResponseObject.ResponseGetAll;
 import com.codideep.main.Service.Person.ResponseObject.ResponseGetData;
 import com.codideep.main.Service.Person.ResponseObject.ResponseInsert;
+import com.codideep.main.Service.Person.ResponseObject.ResponseLogin;
 
 import jakarta.validation.Valid;
 
@@ -122,6 +124,40 @@ public class PersonController {
 
 			response.mo.addMessage("Eliminación realizada correctamente");
 			response.mo.setSuccess();
+		} catch (Exception e) {
+			response.mo.addMessage("Ocurrió un error inesperado, estamos trabajando para resolvero. Gracias por su paciencia.");
+			response.mo.setException();
+		}
+
+		return new ResponseEntity<>(response, HttpStatus.OK);
+	}
+
+	@PostMapping(path = "login", consumes = "multipart/form-data")
+	public ResponseEntity<ResponseLogin> login(@ModelAttribute RequestLogin request) {
+		ResponseLogin response = new ResponseLogin();
+
+		try {
+			DtoPerson dtoPerson = businessPerson.login(request.getDni(), request.getPassword());
+
+			if(dtoPerson != null) {
+				Map<String, Object> map = new HashMap<>();
+
+				map.put("idPerson", dtoPerson.getIdPerson());
+				map.put("firstName", dtoPerson.getFirstName());
+				map.put("surName", dtoPerson.getSurName());
+				map.put("dni", dtoPerson.getDni());
+				map.put("gender", dtoPerson.isGender());
+				map.put("birthDate", dtoPerson.getBirthDate());
+				map.put("createdAt", dtoPerson.getCreatedAt());
+				map.put("updatedAt", dtoPerson.getUpdatedAt());
+
+				response.dto.person = map;
+
+				response.mo.addMessage("Bienvenido(a) al sistema: " + dtoPerson.getFirstName());
+				response.mo.setSuccess();
+			} else {
+				response.mo.addMessage("Usuario o contraseña incorrecto.");
+			}
 		} catch (Exception e) {
 			response.mo.addMessage("Ocurrió un error inesperado, estamos trabajando para resolvero. Gracias por su paciencia.");
 			response.mo.setException();
