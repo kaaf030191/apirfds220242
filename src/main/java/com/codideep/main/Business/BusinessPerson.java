@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import com.codideep.main.Dto.DtoPerson;
 import com.codideep.main.Entity.TPerson;
+import com.codideep.main.Helper.AesUtil;
 import com.codideep.main.Repository.RepoPerson;
 
 import jakarta.transaction.Transactional;
@@ -21,7 +22,7 @@ public class BusinessPerson {
 	private RepoPerson repoPerson;
 
 	@Transactional
-	public void insert(DtoPerson dtoPerson) {
+	public void insert(DtoPerson dtoPerson) throws Exception {
 		dtoPerson.setIdPerson(UUID.randomUUID().toString());
 		dtoPerson.setCreatedAt(new Date());
 		dtoPerson.setUpdatedAt(new Date());
@@ -32,6 +33,7 @@ public class BusinessPerson {
 		tPerson.setFirstName(dtoPerson.getFirstName());
 		tPerson.setSurName(dtoPerson.getSurName());
 		tPerson.setDni(dtoPerson.getDni());
+		tPerson.setPassword(AesUtil.encrypt(dtoPerson.getPassword()));
 		tPerson.setGender(dtoPerson.isGender());
 		tPerson.setBirthDate(dtoPerson.getBirthDate());
 		tPerson.setCreatedAt(dtoPerson.getCreatedAt());
@@ -74,12 +76,12 @@ public class BusinessPerson {
 		return true;
 	}
 
-	public DtoPerson login(String dni, String password) {
-		Optional<TPerson> tPerson = repoPerson.login(dni, password);
+	public DtoPerson login(String dni, String password) throws Exception {
+		Optional<TPerson> tPerson = repoPerson.getByDni(dni);
 
 		DtoPerson dtoPerson = null;
 
-		if(tPerson.isPresent()) {
+		if(tPerson.isPresent() && AesUtil.decrypt(tPerson.get().getPassword()).equals(password)) {
 			dtoPerson = new DtoPerson();
 
 			dtoPerson.setIdPerson(tPerson.get().getIdPerson());

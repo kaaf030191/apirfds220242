@@ -14,6 +14,8 @@ public class RequestInsert {
 	private String surName;
 	@NotBlank(message = "El campo \"dni\" es requerido")
 	private String dni;
+	@NotBlank(message = "El campo \"password\" es requerido")
+	private String password;
 	@NotNull(message = "El campo \"firstName\" es requerido")
 	private boolean gender;
 	@NotBlank(message = "El campo \"birthDate\" es requerido")

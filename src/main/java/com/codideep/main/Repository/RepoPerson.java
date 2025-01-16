@@ -10,6 +10,6 @@ import com.codideep.main.Entity.TPerson;
 
 @Repository
 public interface RepoPerson extends JpaRepository<TPerson, String> {
-	@Query(value = "select * from tperson where dni = :dni and password = :password", nativeQuery = true)
-	Optional<TPerson> login(String dni, String password);
+	@Query(value = "select * from tperson where dni = :dni", nativeQuery = true)
+	Optional<TPerson> getByDni(String dni);
 }

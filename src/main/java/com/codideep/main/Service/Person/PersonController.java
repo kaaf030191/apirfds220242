@@ -69,6 +69,7 @@ public class PersonController {
 			dtoPerson.setFirstName(request.getFirstName());
 			dtoPerson.setSurName(request.getSurName());
 			dtoPerson.setDni(request.getDni());
+			dtoPerson.setPassword(request.getPassword());
 			dtoPerson.setGender(request.isGender());
 			dtoPerson.setBirthDate(new SimpleDateFormat("yyyy-mm-dd").parse(request.getBirthDate()));
 
