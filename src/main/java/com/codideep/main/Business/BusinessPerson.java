@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import com.codideep.main.Dto.DtoPerson;
 import com.codideep.main.Entity.TPerson;
 import com.codideep.main.Helper.AesUtil;
+import com.codideep.main.Helper.JwtUtil;
 import com.codideep.main.Repository.RepoPerson;
 
 import jakarta.transaction.Transactional;
@@ -40,6 +41,27 @@ public class BusinessPerson {
 		tPerson.setUpdatedAt(dtoPerson.getUpdatedAt());
 
 		repoPerson.save(tPerson);
+	}
+
+	public DtoPerson getByIdPerson(String idPerson) throws Exception {
+		Optional<TPerson> tPerson = repoPerson.findById(idPerson);
+
+		DtoPerson dtoPerson = null;
+
+		if(tPerson.isPresent()) {
+			dtoPerson = new DtoPerson();
+
+			dtoPerson.setIdPerson(tPerson.get().getIdPerson());
+			dtoPerson.setFirstName(tPerson.get().getFirstName());
+			dtoPerson.setSurName(tPerson.get().getSurName());
+			dtoPerson.setDni(tPerson.get().getDni());
+			dtoPerson.setGender(tPerson.get().isGender());
+			dtoPerson.setBirthDate(tPerson.get().getBirthDate());
+			dtoPerson.setCreatedAt(tPerson.get().getCreatedAt());
+			dtoPerson.setUpdatedAt(tPerson.get().getUpdatedAt());
+		}
+
+		return dtoPerson;
 	}
 
 	public List<DtoPerson> getAll() {
@@ -92,6 +114,8 @@ public class BusinessPerson {
 			dtoPerson.setBirthDate(tPerson.get().getBirthDate());
 			dtoPerson.setCreatedAt(tPerson.get().getCreatedAt());
 			dtoPerson.setUpdatedAt(tPerson.get().getUpdatedAt());
+
+			dtoPerson.setJwtToken(new JwtUtil().generateToken(dtoPerson.getIdPerson(), dtoPerson.getFirstName()));
 		}
 
 		return dtoPerson;

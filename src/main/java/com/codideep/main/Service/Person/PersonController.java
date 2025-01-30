@@ -151,6 +151,7 @@ public class PersonController {
 				map.put("birthDate", dtoPerson.getBirthDate());
 				map.put("createdAt", dtoPerson.getCreatedAt());
 				map.put("updatedAt", dtoPerson.getUpdatedAt());
+				map.put("jwtToken", dtoPerson.getJwtToken());
 
 				response.dto.person = map;
 
